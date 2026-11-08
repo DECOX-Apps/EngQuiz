@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Siêu Cấp Quizee - Trò chơi trắc nghiệm vui nhộn với hàng trăm câu hỏi đa dạng chủ đề, chơi ngay trên trình duyệt.">
+    <title>Siêu Cấp Quizee</title>
+    <style>
+:root {
+    --mau-chinh: #8b5cf6;
+    --mau-nen: #2e1065;
+    --mau-dung: #10b981;
+    --mau-sai: #ef4444;
+    --mau-canh-bao: #f59e0b;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    height: 100dvh; padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    font-family: sans-serif;
+    color: #333;
+    position: relative;
+    background: #1e0a4d; }
+
+.hieu-ung-nen {
+    position: fixed;
+    top: -25%;
+    left: -25%;
+    right: -25%;
+    bottom: -25%;
+    background: linear-gradient(-45deg, #2e1065, #4c1d95, #6d28d9, #312e81);
+    background-size: 400% 400%;
+    will-change: transform;
+    animation: hieuUngNenDiChuyen 18s ease-in-out infinite;
+    z-index: -2;
+    pointer-events: none;
+}
+@keyframes hieuUngNenDiChuyen {
+    0%   { transform: translate3d(0%, 0%, 0) rotate(0deg); }
+    50%  { transform: translate3d(-6%, 5%, 0) rotate(2deg); }
+    100% { transform: translate3d(0%, 0%, 0) rotate(0deg); }
+}
+
+.qua-cau-troi-noi {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    z-index: -1;
+    pointer-events: none;
+}
+.qua-cau {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(45px);
+    opacity: 0.35;
+    will-change: transform;
+}
+.qua-cau-1 { width: 260px; height: 260px; background: #8b5cf6; top: 8%;  left: 8%;   animation: troiNoi1 16s ease-in-out infinite; }
+.qua-cau-2 { width: 220px; height: 220px; background: #ec4899; bottom: 10%; right: 8%; animation: troiNoi2 20s ease-in-out infinite; }
+.qua-cau-3 { width: 190px; height: 190px; background: #3b82f6; top: 55%;  left: 68%;  animation: troiNoi3 14s ease-in-out infinite; }
+.qua-cau-4 { width: 160px; height: 160px; background: #f59e0b; bottom: 28%; left: 18%; animation: troiNoi1 22s ease-in-out infinite reverse; }
+
+@keyframes troiNoi1 { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(30px,-40px,0); } }
+@keyframes troiNoi2 { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(-35px,30px,0); } }
+@keyframes troiNoi3 { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(-25px,-30px,0); } }
+
+#nut-am-nhac {
+    position: absolute;
+    top: max(16px, env(safe-area-inset-top));
+    right: max(16px, env(safe-area-inset-right));
+    background: rgba(255, 255, 255, 0.2);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50px;
+    color: white;
+    padding: 10px 18px;
+    font-weight: bold;
+    font-size: clamp(12px, 3vw, 15px);
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    z-index: 100;
+}
+#nut-am-nhac:hover { background: rgba(255, 255, 255, 0.4); transform: scale(1.1); }
+#nut-am-nhac:active { transform: scale(0.95); }
+
+.the-giao-dien {
+    display: none;
+    position: relative;
+    background: rgba(255, 255, 255, 0.95);
+    padding: clamp(20px, 5vw, 30px);
+    border-radius: clamp(16px, 4vw, 25px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    width: min(92vw, 450px);
+    text-align: center;
+}
+.the-giao-dien.hien-thi {
+    display: block;
+    will-change: transform;
+    animation: xuatHienThe 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@media (max-height: 600px) {
+    .the-giao-dien.hien-thi {
+        max-height: 94vh;
+        max-height: 94dvh;
+        overflow-y: auto;
+    }
+}
+@keyframes xuatHienThe {
+    from { opacity: 0; transform: translateY(24px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes bayLoLung {
+    0%   { transform: translateY(0px); }
+    50%  { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
+}
+
+#bang-dang-nhap h1 {
+    font-size: clamp(1.5rem, 6vw, 2.1rem);
+    margin: 0 0 8px;
+}
+
+#thanh-thoi-gian {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 8px;
+    width: 100%;
+    background: var(--mau-dung);
+    transform-origin: left center;
+    transform: scaleX(1);
+    border-radius: 25px 25px 0 0;
+    will-change: transform;
+}
+#thanh-thoi-gian.canh-bao { background: var(--mau-canh-bao); }
+#thanh-thoi-gian.nguy-hiem { background: var(--mau-sai); }
+
+.nut-chon, .nut-hanh-dong {
+    touch-action: manipulation;
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    padding: 15px;
+    margin: 8px 0;
+    border: 2px solid #ddd;
+    border-radius: 15px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    background: white;
+    word-break: break-word;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+.nut-chon {
+    animation: hieuUngVaoCau 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.nut-chon:hover:not(:disabled) {
+    border-color: var(--mau-chinh);
+    background: #f5f3ff;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+}
+.nut-chon:active:not(:disabled), .nut-hanh-dong:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+.chon-dung {
+    background: var(--mau-dung) !important;
+    color: white;
+    border-color: var(--mau-dung) !important;
+    transform: scale(1.03);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.25), 0 10px 20px rgba(16, 185, 129, 0.35);
+    animation: nhipDung 0.5s ease;
+}
+@keyframes nhipDung {
+    0%   { transform: scale(1); }
+    45%  { transform: scale(1.08); }
+    100% { transform: scale(1.03); }
+}
+
+.chon-sai {
+    background: var(--mau-sai) !important;
+    color: white;
+    border-color: var(--mau-sai) !important;
+    animation: rungLac 0.4s ease;
+}
+@keyframes rungLac {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.nut-hanh-dong {
+    background: var(--mau-chinh);
+    color: white;
+    border: none;
+    font-size: 18px;
+    text-transform: uppercase;
+}
+.nut-hanh-dong:hover:not(:disabled) {
+    background: #7c3aed;
+    transform: translateY(-2px);
+}
+.nut-bo-qua { background: #64748b; margin-top: 15px; }
+.nut-bo-qua:hover:not(:disabled) { background: #475569; }
+
+input[type="text"] {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    border: 2px solid #ddd;
+    font-size: 16px; box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+input[type="text"]:focus {
+    border-color: var(--mau-chinh);
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+}
+
+#van-ban-trang-thai {
+    margin-top: 15px;
+    font-weight: 800;
+    font-size: 1.2rem;
+    min-height: 30px;
+    transition: color 0.3s ease;
+}
+#van-ban-tien-do {
+    color: var(--mau-chinh);
+    font-weight: 900;
+    margin-bottom: 10px;
+    font-size: clamp(0.95rem, 3vw, 1.1rem);
+}
+#tieu-de-cau-hoi {
+    font-size: clamp(1.05rem, 4vw, 1.3rem);
+    line-height: 1.5;
+    color: #1e1e1e;
+}
+
+@keyframes hieuUngVaoCau {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.hieu-ung-vao {
+    animation: hieuUngVaoCau 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+#bang-ket-qua h2 {
+    color: #3b82f6;
+    font-size: clamp(1.4rem, 5.5vw, 2rem);
+    margin-top: 0;
+}
+#bang-ket-qua .chu-thich {
+    font-size: 1.2rem;
+    color: #64748b;
+}
+#diem-so-cuoi-cung {
+    color: var(--mau-dung);
+    font-size: clamp(3rem, 14vw, 5rem);
+    margin: 10px 0;
+    text-shadow: 2px 2px 0px #d1fae5;
+}
+#chi-tiet-thong-ke {
+    text-align: left;
+    background: #f1f5f9;
+    padding: 20px;
+    border-radius: 15px;
+    font-size: 1.1rem;
+    line-height: 2;
+    margin-bottom: 20px;
+    color: #334155;
+    border: 2px dashed #cbd5e1;
+}
+.nut-choi-lai {
+    background: #3b82f6;
+    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+}
+.nut-choi-lai:hover:not(:disabled) { background: #2563eb; }
+
+#phao-hoa {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 999;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+#khung-giai-thich { text-align: left; }
+#khung-giai-thich:not(:empty) {
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: #f1f5f9;
+    border-radius: 14px;
+    border-left: 5px solid var(--mau-chinh);
+    font-size: 15px;
+    line-height: 1.5;
+    color: #1e293b;
+}
+#khung-giai-thich p { margin: 6px 0; }
+.gt-dung { color: var(--mau-dung); }
+.gt-sai { color: var(--mau-sai); }
+.gt-bo { color: var(--mau-canh-bao); }
+
+</style>
+</head>
+<body>
+    <div class="hieu-ung-nen" aria-hidden="true"></div>
+    <div class="qua-cau-troi-noi" aria-hidden="true">
+        <div class="qua-cau qua-cau-1"></div>
+        <div class="qua-cau qua-cau-2"></div>
+        <div class="qua-cau qua-cau-3"></div>
+        <div class="qua-cau qua-cau-4"></div>
+    </div>
+    <canvas id="phao-hoa" aria-hidden="true"></canvas>
+
+    <button id="nut-am-nhac" onclick="batTatNhac()">🎵 Bật nhạc</button>
+    <audio id="nhac-nen" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop preload="none"></audio>
+
+    <div id="bang-dang-nhap" class="the-giao-dien hien-thi">
+        <h1>🚀 HỆ THỐNG QUIZEE 🚀</h1>
+        <p>Quiz, Coding By GitHub</p>
+        <button class="nut-hanh-dong" id="nut-tiep-tuc">Tiếp tục với đố vui...</button>
+        <button class="nut-hanh-dong" id="nut-nhap-ma">Nhập mã...</button>
+    </div>
+
+    <div id="bang-nhap-ma" class="the-giao-dien">
+        <h2>🔑 NHẬP MÃ</h2>
+        <input type="text" id="o-nhap-ma" placeholder="Nhập mã..." inputmode="numeric" autocomplete="off">
+        <button class="nut-hanh-dong" id="nut-xac-nhan">Xác Nhận</button>
+        <button class="nut-hanh-dong nut-bo-qua" id="nut-quay-lai">Quay Lại</button>
+    </div>
+
+    <div id="bang-cau-hoi" class="the-giao-dien">
+        <div id="thanh-thoi-gian"></div>
+        <div id="van-ban-tien-do"></div>
+        <h3 id="tieu-de-cau-hoi"></h3>
+        <div id="khu-vuc-dap-an"></div>
+        <button class="nut-hanh-dong nut-bo-qua" id="nut-bo-qua" onclick="boQuaCauHoi()">BỎ QUA CÂU NÀY</button>
+        <div id="van-ban-trang-thai" aria-live="polite"></div>
+        <div id="khung-giai-thich"></div>
+    </div>
+
+    <div id="bang-ket-qua" class="the-giao-dien">
+        <h2>🎉 CHÚC MỪNG ĐÃ HOÀN THÀNH 🎉</h2>
+        <div class="chu-thich">Tổng điểm:</div>
+        <h1 id="diem-so-cuoi-cung">0</h1>
+        <div id="chi-tiet-thong-ke"></div>
+        <button class="nut-hanh-dong nut-choi-lai" onclick="choiLaiTuDau()">Play Again</button>
+    </div>
+
+    <script>
+const tapHopCauHoi = [
+    {t:"mcq",q:"Lớp ngoài cùng của Trái Đất gọi là gì?",o:["Lõi","Manti","Vỏ Trái Đất","Nhân"],c:2},
+    {t:"mcq",q:"Hiện tượng nào tạo ra ngày và đêm trên Trái Đất?",o:["Trái Đất quay quanh Mặt Trời","Trái Đất tự quay quanh trục","Mặt Trăng quay quanh Trái Đất","Sự thay đổi mùa"],c:1},
+    {t:"mcq",q:"Nguồn năng lượng chính của Trái Đất là gì?",o:["Núi lửa","Mặt Trời","Gió","Đại dương"],c:1},
+    {t:"mcq",q:"Lớp khí bao quanh Trái Đất gọi là gì?",o:["Thủy quyển","Sinh quyển","Khí quyển","Thạch quyển"],c:2},
+    {t:"mcq",q:"Nước tồn tại nhiều nhất ở đâu trên Trái Đất?",o:["Sông","Hồ","Đại dương","Khí quyển"],c:2},
+    {t:"mcq",q:"Thủy triều chịu ảnh hưởng chủ yếu của thiên thể nào?",o:["Sao Hỏa","Mặt Trăng","Sao Kim","Sao Thủy"],c:1},
+    {t:"mcq",q:"Động đất thường xảy ra ở đâu?",o:["Đồng bằng","Trung tâm lục địa","Ranh giới mảng kiến tạo","Sa mạc"],c:2},
+    {t:"mcq",q:"Vật chất nóng chảy dưới lòng đất gọi là gì?",o:["Magma","Đá vôi","Nước ngầm","Khoáng chất"],c:0},
+    {t:"mcq",q:"Magma khi ra ngoài bề mặt được gọi là gì?",o:["Dung nham","Đá trầm tích","Tro bụi","Hơi nước"],c:0},
+    {t:"mcq",q:"Quá trình nước biến thành hơi nước gọi là gì?",o:["Ngưng tụ","Bay hơi","Đông đặc","Lắng đọng"],c:1},
+    {t:"mcq",q:"Hơi nước tạo thành mây là quá trình gì?",o:["Bay hơi","Ngưng tụ","Xâm thực","Phong hóa"],c:1},
+    {t:"mcq",q:"Sông và biển thuộc quyển nào?",o:["Khí quyển","Thủy quyển","Sinh quyển","Thạch quyển"],c:1},
+    {t:"mcq",q:"Sinh vật sống thuộc quyển nào?",o:["Sinh quyển","Khí quyển","Manti","Nhân Trái Đất"],c:0},
+    {t:"mcq",q:"Gió là sự chuyển động của gì?",o:["Nước","Không khí","Ánh sáng","Đá"],c:1},
+    {t:"mcq",q:"Không khí di chuyển từ nơi nào đến nơi nào?",o:["Áp suất thấp đến cao","Áp suất cao đến thấp","Nhiệt độ thấp đến cao","Lạnh đến lạnh hơn"],c:1},
+    {t:"mcq",q:"Lớp dày nhất của Trái Đất là gì?",o:["Vỏ","Manti","Nhân ngoài","Nhân trong"],c:1},
+    {t:"mcq",q:"Nhân ngoài của Trái Đất ở trạng thái nào?",o:["Rắn","Lỏng","Khí","Plasma"],c:1},
+    {t:"mcq",q:"Nhân trong của Trái Đất có trạng thái gì?",o:["Rắn","Lỏng","Khí","Bùn"],c:0},
+    {t:"mcq",q:"Tầng khí quyển gần mặt đất nhất là gì?",o:["Bình lưu","Đối lưu","Trung quyển","Ngoại quyển"],c:1},
+    {t:"mcq",q:"Tầng ozone nằm chủ yếu ở tầng nào?",o:["Đối lưu","Bình lưu","Trung quyển","Ngoại quyển"],c:1},
+    {t:"mcq",q:"Vai trò chính của tầng ozone là gì?",o:["Tạo mưa","Hấp thụ tia cực tím","Tạo gió","Làm lạnh khí quyển"],c:1},
+    {t:"mcq",q:"Đá được cấu tạo chủ yếu từ gì?",o:["Khoáng vật","Nước","Không khí","Sinh vật"],c:0},
+    {t:"mcq",q:"Đá bị phá vỡ thành mảnh nhỏ gọi là gì?",o:["Phong hóa","Bồi tụ","Đông đặc","Hóa thạch"],c:0},
+    {t:"mcq",q:"Vật liệu bị cuốn đi bởi nước hoặc gió gọi là gì?",o:["Phong hóa","Xâm thực","Ngưng tụ","Kết tinh"],c:1},
+    {t:"mcq",q:"Đồng bằng châu thổ hình thành do quá trình nào?",o:["Núi lửa","Bồi tụ","Động đất","Uốn nếp"],c:1},
+    {t:"mcq",q:"Áp suất khí quyển thay đổi nhiều nhất theo yếu tố nào?",o:["Độ cao","Độ ẩm","Thảm thực vật","Địa hình bằng phẳng"],c:0},
+    {t:"mcq",q:"Nguyên nhân trực tiếp tạo ra gió là gì?",o:["Chênh lệch áp suất không khí","Sóng biển","Núi lửa","Thủy triều"],c:0},
+    {t:"mcq",q:"Dòng hải lưu nóng ảnh hưởng thế nào đến khí hậu ven biển?",o:["Lạnh hơn","Ấm và ẩm hơn","Khô hơn","Không ảnh hưởng"],c:1},
+    {t:"mcq",q:"Thành phần khí chiếm tỉ lệ lớn nhất trong khí quyển là gì?",o:["Oxy","Nitơ","CO2","Hydro"],c:1},
+    {t:"mcq",q:"Khí nhà kính chính gây nóng lên toàn cầu là gì?",o:["Oxy","Nitơ","CO2","Neon"],c:2},
+    {t:"mcq",q:"Sóng địa chấn không truyền được qua môi trường nào?",o:["Chất rắn","Chất lỏng","Chất khí","Chân không"],c:3},
+    {t:"mcq",q:"Sóng S không truyền qua lớp nào của Trái Đất?",o:["Vỏ","Manti","Nhân ngoài","Thạch quyển"],c:2},
+    {t:"mcq",q:"Thạch quyển gồm những phần nào?",o:["Vỏ và phần trên của manti","Toàn bộ manti","Nhân ngoài và nhân trong","Chỉ vỏ"],c:0},
+    {t:"mcq",q:"Chuyển động mảng kiến tạo do nguyên nhân chính nào?",o:["Gió mạnh","Dòng đối lưu trong manti","Mưa lớn","Thủy triều"],c:1},
+    {t:"mcq",q:"Hiện tượng lệch hướng chuyển động của gió do Trái Đất quay gọi là gì?",o:["Hiệu ứng nhà kính","Hiệu ứng Coriolis","Sóng thần","Đối lưu nhiệt"],c:1},
+    {t:"mcq",q:"Mưa axit hình thành chủ yếu do khí nào?",o:["Oxy","CO2, SO2, NOx","Hydro","Heli"],c:1},
+    {t:"mcq",q:"Từ trường Trái Đất hình thành chủ yếu do chuyển động của gì?",o:["Nước đại dương","Lõi ngoài kim loại lỏng","Khí quyển","Vỏ Trái Đất"],c:1},
+    {t:"mcq",q:"Hiện tượng làm bề mặt Trái Đất bị hạ thấp theo thời gian là gì?",o:["Bồi tụ","Xâm thực","Uốn nếp","Phun trào"],c:1},
+    {t:"mcq",q:"Loại phong hóa mạnh nhất ở khí hậu nóng ẩm là gì?",o:["Phong hóa vật lí","Phong hóa hóa học","Phong hóa băng giá","Phong hóa cơ học"],c:1},
+    {t:"mcq",q:"Đá hình thành từ magma nguội đi gọi là gì?",o:["Đá trầm tích","Đá biến chất","Đá mácma","Đá vôi"],c:2},
+    {t:"mcq",q:"Đá vôi thuộc nhóm đá nào?",o:["Đá mácma","Đá trầm tích","Đá biến chất","Đá núi lửa"],c:1},
+    {t:"mcq",q:"Đá biến chất hình thành do yếu tố nào?",o:["Nhiệt độ và áp suất cao","Gió mạnh","Ánh sáng Mặt Trời","Nước biển bốc hơi"],c:0},
+    {t:"mcq",q:"Đồng bằng hình thành do sự tích tụ vật liệu gọi là gì?",o:["Xâm thực","Bồi tụ","Phong hóa","Nâng kiến tạo"],c:1},
+    {t:"mcq",q:"Dòng đối lưu trong manti gây ra điều gì?",o:["Gió mùa","Chuyển động mảng kiến tạo","Thủy triều","Mưa axit"],c:1},
+    {t:"mcq",q:"El Niño liên quan đến sự thay đổi của yếu tố nào?",o:["Nhiệt độ nước biển và hải lưu","Núi lửa","Từ trường","Động đất"],c:0},
+    {t:"mcq",q:"Hiện tượng hình thành núi uốn nếp xảy ra khi nào?",o:["Hai mảng tách xa","Hai mảng va chạm","Mảng đứng yên","Băng tan"],c:1},
+    {t:"mcq",q:"Ranh giới tách giãn thường tạo ra dạng địa hình nào?",o:["Sống núi giữa đại dương","Đồng bằng","Sa mạc","Cao nguyên băng"],c:0},
+    {t:"mcq",q:"Hiện tượng hút chìm xảy ra khi nào?",o:["Hai mảng trượt ngang","Mảng đại dương chui xuống dưới mảng khác","Núi lửa tắt","Gió mạnh"],c:1},
+    {t:"mcq",q:"Sóng thần thường do nguyên nhân nào gây ra?",o:["Gió mạnh","Động đất đáy biển","Mưa lớn","Thủy triều cao"],c:1},
+    {t:"mcq",q:"Nguồn năng lượng bên trong Trái Đất chủ yếu đến từ đâu?",o:["Ánh sáng Mặt Trời","Phản ứng phóng xạ","Gió","Sóng biển"],c:1},
+    {t:"mcq",q:"Dòng hải lưu có vai trò gì với khí hậu toàn cầu?",o:["Không ảnh hưởng","Phân phối nhiệt","Làm giảm áp suất","Tạo ozone"],c:1},
+    {t:"mcq",q:"Hiện tượng đảo nhiệt gây hậu quả gì?",o:["Tăng gió","Giữ chất ô nhiễm gần mặt đất","Tăng mưa","Giảm nhiệt độ biển"],c:1},
+    {t:"mcq",q:"Sa mạc hóa chủ yếu do yếu tố nào?",o:["Tăng mưa","Khai thác đất quá mức và biến đổi khí hậu","Núi lửa","Thủy triều"],c:1},
+    {t:"mcq",q:"Độ mặn nước biển phụ thuộc chủ yếu vào gì?",o:["Ánh sáng","Lượng muối hòa tan","Sóng","Độ sâu"],c:1},
+    {t:"mcq",q:"Tầng khí quyển chứa phần lớn thời tiết là gì?",o:["Bình lưu","Đối lưu","Trung quyển","Ngoại quyển"],c:1},
+    {t:"mcq",q:"Khí quyển giúp Trái Đất duy trì sự sống chủ yếu nhờ điều gì?",o:["Phản xạ toàn bộ ánh sáng","Điều hòa nhiệt và bảo vệ khỏi bức xạ","Làm Trái Đất quay","Tạo núi"],c:1},
+    {t:"mcq",q:"Hiệu ứng nhà kính tự nhiên có vai trò gì?",o:["Làm Trái Đất đóng băng","Giữ nhiệt giúp Trái Đất đủ ấm","Ngăn mưa","Tạo động đất"],c:1},
+    {t:"mcq",q:"Sự phân bố khí hậu theo vĩ độ phụ thuộc chủ yếu vào gì?",o:["Góc chiếu tia Mặt Trời","Núi lửa","Độ sâu biển","Loại đất"],c:0},
+    {t:"mcq",q:"Vỏ đại dương so với vỏ lục địa có đặc điểm gì?",o:["Dày hơn","Mỏng hơn","Không có đá","Lạnh hơn nhiều"],c:1},
+    {t:"mcq",q:"Granite thuộc loại đá nào?",o:["Đá mácma xâm nhập","Đá trầm tích","Đá biến chất","Đá vôi"],c:0},
+    {t:"mcq",q:"Sóng P truyền được qua môi trường nào?",o:["Chỉ chất rắn","Chỉ chất lỏng","Chất rắn, lỏng và khí","Chân không"],c:2},
+    {t:"mcq",q:"Vì sao sóng S không truyền qua nhân ngoài?",o:["Vì quá lạnh","Vì nhân ngoài ở trạng thái lỏng","Vì không có vật chất","Vì áp suất thấp"],c:1},
+    {t:"mcq",q:"Bazan thường hình thành trong điều kiện nào?",o:["Magma nguội nhanh trên bề mặt","Áp suất cực thấp","Trầm tích biển sâu","Phong hóa hóa học"],c:0},
+    {t:"mcq",q:"Quá trình nào làm tăng CO2 trong khí quyển nhiều nhất hiện nay?",o:["Quang hợp","Đốt nhiên liệu hóa thạch","Ngưng tụ","Bay hơi"],c:1},
+    {t:"mcq",q:"Đại dương điều hòa khí hậu nhờ đặc tính nào của nước?",o:["Phản xạ mạnh","Tích trữ nhiệt lớn","Không dẫn nhiệt","Không chuyển động"],c:1},
+    {t:"mcq",q:"Hiệu ứng Coriolis mạnh nhất ở đâu?",o:["Xích đạo","Vĩ độ trung bình và cao","Mọi nơi như nhau","Chỉ ở đại dương"],c:1},
+    {t:"mcq",q:"Ranh giới trượt ngang giữa các mảng thường gây ra gì?",o:["Núi lửa lớn","Đứt gãy và động đất","Đồng bằng","Băng hà"],c:1},
+    {t:"mcq",q:"Đất hình thành từ sự tác động tổng hợp của yếu tố nào?",o:["Đá mẹ, sinh vật, khí hậu, địa hình và thời gian","Chỉ nước mưa","Chỉ cát","Chỉ sinh vật"],c:0},
+    {t:"mcq",q:"Nội lực Trái Đất gây ra hiện tượng nào?",o:["Mưa","Gió mùa","Nâng và hạ vỏ Trái Đất","Bay hơi"],c:2},
+    {t:"mcq",q:"Ngoại lực địa chất chủ yếu đến từ nguồn năng lượng nào?",o:["Nhiệt trong lòng đất","Mặt Trời","Từ trường","Sóng biển sâu"],c:1},
+    {t:"mcq",q:"Chu trình đá thể hiện điều gì?",o:["Đá không thay đổi","Sự chuyển hóa giữa các loại đá","Sự bay hơi nước","Sự hình thành gió"],c:1},
+    {t:"mcq",q:"Yếu tố nào quyết định sự tồn tại lâu dài của khí quyển Trái Đất?",o:["Trọng lực Trái Đất","Sóng biển","Núi lửa","Mưa"],c:0},
+    {t:"mcq",q:"Khi nhiệt độ toàn cầu tăng, băng tan làm mực nước biển tăng do hiện tượng nào?",o:["Giãn nở nhiệt của nước và băng tan","Gió mạnh","Động đất","Núi lửa"],c:0},
+    {t:"mcq",q:"Dấu hiệu quan trọng chứng minh các mảng kiến tạo đang chuyển động là gì?",o:["Thời tiết thay đổi","Phân bố động đất và núi lửa theo dải","Mực nước biển ổn định","Đất luôn đứng yên"],c:1},
+    {t:"mcq",q:"Nguyên nhân sâu xa khiến Trái Đất có hoạt động kiến tạo mảng là gì?",o:["Ánh sáng Mặt Trời","Nhiệt bên trong Trái Đất tạo dòng đối lưu manti","Gió toàn cầu","Thủy triều"],c:1},
+    {t:"text",q:"Suốt ngày nằm ngủ một nơi, đến lúc tối trời ra ôm đầu chủ?",a:["gối","cái gối"]},
+    {t:"text",q:"Bảo tớ là cậu ông trời, nếu ai đánh tớ thì trời đánh cho?",a:["cóc","con cóc"]},
+    {t:"text",q:"Bàn gì làm áo nõn nà, bàn gì đốt hết cửa nhà ruộng nương?",a:["bàn là","bàn ủi"]},
+    {t:"text",q:"Mình dài, đầu nhọn. Nằm gọn dưới hầm. Bọn giặc ngoại xâm, nghe tên đã sợ?",a:["chày","cái chày"]},
+    {t:"text",q:"Cá con, cá vợ, cá chồng. Vẫy vùng trong đó mà không tàu thuyền?",a:["bể cá","hồ cá"]},
+
+    {t:"mcq",q:"Vì sao bầu trời ban ngày có màu xanh?",o:["Vì ánh sáng Mặt Trời bị tán xạ trong khí quyển","Vì nước biển phản chiếu lên trời","Vì mây có màu xanh","Vì không khí có màu xanh"],c:0},
+    {t:"mcq",q:"Nước bay hơi rồi tạo thành mây nhờ quá trình nào?",o:["Bay hơi và ngưng tụ","Đông đặc và nóng chảy","Chảy tràn và bốc cháy","Hòa tan và kết tinh"],c:0},
+    {t:"mcq",q:"Vì sao sau mưa thường xuất hiện cầu vồng?",o:["Vì ánh sáng bị khúc xạ và phản xạ trong giọt nước","Vì mặt đất phát sáng","Vì mây đổi màu liên tục","Vì gió làm không khí có màu"],c:0},
+    {t:"mcq",q:"Hiện tượng sấm sét chủ yếu do điều gì gây ra?",o:["Sự phóng điện trong mây dông","Sự quay của Trái Đất","Sự mọc của cây cối","Sự bốc hơi của nước biển"],c:0},
+    {t:"mcq",q:"Vì sao lá cây thường có màu xanh?",o:["Vì có chất diệp lục hấp thụ ánh sáng","Vì lá luôn được nhuộm màu xanh","Vì nước trong lá có màu xanh","Vì đất truyền màu lên lá"],c:0},
+    {t:"mcq",q:"Quang hợp của cây diễn ra nhờ yếu tố nào?",o:["Ánh sáng Mặt Trời","Ánh sáng đèn pin","Gió mạnh","Mưa lớn"],c:0},
+    {t:"mcq",q:"Vì sao mặt Trăng thay đổi hình dạng nhìn từ Trái Đất?",o:["Vì phần được Mặt Trời chiếu sáng thay đổi","Vì Mặt Trăng tự đổi hình","Vì Trái Đất lớn lên mỗi ngày","Vì mây che khuất hoàn toàn"],c:0},
+    {t:"mcq",q:"Nguyên nhân của thủy triều là gì?",o:["Lực hấp dẫn của Mặt Trăng và Mặt Trời","Gió thổi trên biển","Mưa rơi xuống đại dương","Độ mặn của nước biển"],c:0},
+    {t:"mcq",q:"Vì sao cơ thể người cần nước?",o:["Để duy trì hoạt động sống và cân bằng cơ thể","Chỉ để làm mát tay chân","Chỉ để uống cho đỡ khát","Vì nước làm xương tự dài ra"],c:0},
+    {t:"mcq",q:"Máu trong cơ thể có chức năng chính nào?",o:["Vận chuyển oxy và chất dinh dưỡng","Làm da đổi màu","Tạo ra âm thanh khi chảy","Làm tóc mọc nhanh"],c:0},
+    {t:"mcq",q:"Vì sao tim đập liên tục không ngừng?",o:["Để bơm máu đi khắp cơ thể","Để cơ thể luôn nhảy theo nhịp","Để tạo nhiệt cho tay chân","Để máu tự chảy mà không cần vận chuyển"],c:0},
+    {t:"mcq",q:"Phổi có chức năng gì trong cơ thể?",o:["Trao đổi khí ôxy và khí cacbonic","Nghiền thức ăn","Tạo xương","Lọc nước"],c:0},
+    {t:"mcq",q:"Vì sao con người có cảm xúc vui buồn?",o:["Vì não bộ xử lý các trải nghiệm và tình huống","Vì tim tự thay đổi màu sắc","Vì mắt tạo cảm xúc","Vì tóc dài ra hay ngắn đi"],c:0},
+    {t:"mcq",q:"Trí nhớ của con người được lưu trữ chủ yếu ở đâu?",o:["Trong não bộ","Trong móng tay","Trong gan","Trong xương"],c:0},
+    {t:"mcq",q:"Vì sao con người dễ bị lo lắng?",o:["Vì não dự đoán rủi ro hoặc điều chưa chắc chắn","Vì chân chạy quá nhanh","Vì mắt nhìn quá xa","Vì tay cầm điện thoại lâu"],c:0},
+    {t:"mcq",q:"Khi sợ hãi cơ thể phản ứng như thế nào?",o:["Tim đập nhanh hơn và căng cơ hơn","Cơ thể lập tức ngủ say","Máu ngừng lưu thông","Não ngừng hoạt động hoàn toàn"],c:0},
+    {t:"mcq",q:"Vì sao giấc ngủ quan trọng?",o:["Để cơ thể và não bộ được phục hồi","Để da tự đổi màu","Để không cần ăn nữa","Để mắt không bao giờ chớp"],c:0},
+    {t:"mcq",q:"Thiếu ngủ ảnh hưởng đến điều gì?",o:["Tập trung, tâm trạng và sức khỏe","Chỉ làm tóc rối hơn","Chỉ làm tay lạnh hơn","Không ảnh hưởng gì"],c:0},
+    {t:"mcq",q:"Vì sao con người dễ quên một số thông tin?",o:["Vì não không lưu giữ mọi thứ mãi mãi","Vì mắt bị mỏi","Vì tai nghe kém","Vì tim đập quá chậm"],c:0},
+    {t:"mcq",q:"Tại sao con người thích được khen?",o:["Vì lời khen tạo cảm giác được công nhận và vui vẻ","Vì lời khen làm thức ăn ngon hơn","Vì lời khen đổi được thành tiền ngay","Vì lời khen làm trời mát hơn"],c:0},
+    {t:"mcq",q:"Khi bị lạc đường việc đầu tiên nên làm là gì?",o:["Bình tĩnh và quan sát xung quanh","Chạy thật nhanh cho khỏi sợ","Tắt mọi suy nghĩ","Leo ngay lên cây cao nhất"],c:0},
+    {t:"mcq",q:"Làm sao để xác định phương hướng khi không có la bàn?",o:["Dựa vào mặt trời, rêu, và dấu hiệu tự nhiên","Nhắm mắt đi thẳng thật lâu","Chỉ nhìn màu đất","Đi theo tiếng gió"],c:0},
+    {t:"mcq",q:"Vì sao cần tiết kiệm nước khi sinh tồn?",o:["Vì nước có thể khan hiếm và rất cần cho cơ thể","Vì nước càng ít càng sạch","Vì nước không quan trọng","Vì uống nhiều nước sẽ làm mất sức ngay"],c:0},
+    {t:"mcq",q:"Nguồn nước an toàn thường được nhận biết như thế nào?",o:["Nước sạch, không đục, không có mùi lạ","Nước có bọt càng nhiều càng tốt","Nước có màu càng lạ càng tốt","Nước lấy ở đâu cũng giống nhau"],c:0},
+    {t:"mcq",q:"Khi bị thương nhẹ nên xử lý ra sao?",o:["Rửa sạch vết thương và băng lại nếu cần","Bỏ mặc cho tự khỏi ngay","Chà xát thật mạnh bằng đất","Ngâm liên tục trong nước bẩn"],c:0},
+    {t:"mcq",q:"Vì sao cần mang theo đồ sơ cứu?",o:["Để xử lý nhanh các tình huống chấn thương nhỏ","Để khoe với bạn bè","Để thay điện thoại","Để làm đồ trang trí"],c:0},
+    {t:"mcq",q:"Khi gặp động vật hoang dã nên làm gì?",o:["Giữ khoảng cách và không trêu chọc","Chạy lại gần để chụp ảnh","La hét và ném đá ngay","Quay lưng lao đi thật nhanh"],c:0},
+    {t:"mcq",q:"Làm thế nào để tạo lửa trong tình huống khẩn cấp?",o:["Dùng bật lửa, diêm hoặc dụng cụ tạo lửa an toàn","Dùng nước đổ lên lá khô","Dùng đá đập vào đất ướt","Dùng gió thổi mạnh vào tay"],c:0},
+    {t:"mcq",q:"Vì sao dấu hiệu cầu cứu phải dễ nhìn thấy?",o:["Để người khác phát hiện nhanh hơn","Để trông đẹp mắt hơn","Để tiết kiệm thời gian nghỉ","Để không ai nhìn thấy"],c:0},
+    {t:"mcq",q:"Khi trời tối mà chưa tìm được đường về nên làm gì?",o:["Tìm nơi an toàn để chờ sáng","Đi sâu thêm vào nơi lạ","Cố chạy thật nhanh trong bóng tối","Tắt hết khả năng quan sát"],c:0},
+    {t:"mcq",q:"Vì sao cần giữ bình tĩnh khi gặp nguy hiểm?",o:["Vì bình tĩnh giúp nghĩ và hành động đúng hơn","Vì bình tĩnh làm nguy hiểm biến mất ngay","Vì bình tĩnh khiến mọi thứ chậm lại mãi","Vì bình tĩnh thay thế mọi kỹ năng khác"],c:0},
+    {t:"mcq",q:"Khi mất liên lạc điện thoại nên làm gì?",o:["Tìm nơi có tín hiệu hoặc báo cho người xung quanh","Đập điện thoại xuống đất","Giấu máy thật kỹ và ngồi yên","Bỏ luôn việc tìm kiếm hỗ trợ"],c:0},
+    {t:"mcq",q:"Vì sao kỹ năng sinh tồn quan trọng?",o:["Vì giúp tự bảo vệ mình trong tình huống khẩn cấp","Vì chỉ để đi cắm trại cho vui","Vì ai cũng cần làm thám hiểm mỗi ngày","Vì không có thì vẫn sống y như nhau"],c:0},
+    {t:"mcq",q:"Khi bị mắc kẹt nên ưu tiên điều gì?",o:["An toàn, nước, tín hiệu và sự hỗ trợ","Chạy loạn lên","Tiết kiệm sức bằng cách không làm gì mãi","Bỏ qua việc liên lạc"],c:0},
+    {t:"mcq",q:"Vì sao cần biết sơ cứu cơ bản?",o:["Vì sơ cứu đúng có thể giảm nguy hiểm và đau đớn","Vì sơ cứu chỉ dành cho bác sĩ","Vì sơ cứu làm vết thương lớn hơn","Vì sơ cứu không bao giờ cần thiết"],c:0},
+    {t:"mcq",q:"Khi đi rừng cần chuẩn bị gì?",o:["Nước, đèn, bản đồ, đồ ăn và vật dụng cần thiết","Chỉ cần điện thoại pin đầy","Chỉ cần một đôi dép","Không cần chuẩn bị gì"],c:0},
+    {t:"mcq",q:"Vì sao cần lập kế hoạch trước khi làm việc?",o:["Vì giúp tiết kiệm thời gian và làm việc hiệu quả hơn","Vì để công việc tự xong","Vì ai cũng thích viết giấy tờ","Vì kế hoạch làm giảm mọi khó khăn ngay lập tức"],c:0},
+    {t:"mcq",q:"Quản lý thời gian giúp ích gì?",o:["Giúp hoàn thành việc đúng lúc và bớt căng thẳng","Làm thời gian dài ra thêm","Làm bài khó tự biến mất","Giúp không cần ngủ"],c:0},
+    {t:"mcq",q:"Vì sao cần đặt mục tiêu học tập?",o:["Vì mục tiêu giúp có hướng đi rõ ràng","Vì mục tiêu làm bài dễ hơn ngay lập tức","Vì không cần cố gắng nữa","Vì mục tiêu chỉ để viết cho đẹp"],c:0},
+    {t:"mcq",q:"Khi gặp bài khó nên làm gì trước?",o:["Đọc kỹ đề và tìm phần mình hiểu trước","Bỏ qua ngay lập tức","Chép đại đáp án","Chờ bài tự giải"],c:0},
+    {t:"mcq",q:"Vì sao làm việc nhóm lại quan trọng?",o:["Vì có thể chia sẻ ý tưởng và hỗ trợ nhau","Vì để một người làm hết","Vì nhóm lúc nào cũng nhanh hơn một mình","Vì không cần giao tiếp"],c:0},
+    {t:"mcq",q:"Khi tranh cãi nên làm gì để giải quyết?",o:["Bình tĩnh nói chuyện và lắng nghe nhau","Nói to hơn cho thắng","Bỏ đi luôn và không quay lại","Đổ lỗi cho tất cả mọi người"],c:0},
+    {t:"mcq",q:"Vì sao cần biết lắng nghe?",o:["Vì giúp hiểu người khác và giao tiếp tốt hơn","Vì chỉ để im lặng cho có","Vì ai cũng thích bị nghe lén","Vì lắng nghe làm quên mọi việc"],c:0},
+    {t:"mcq",q:"Khi bị sai nên phản ứng thế nào?",o:["Nhận lỗi và sửa sai","Chối đến cùng","Đổ lỗi cho thời tiết","Giả vờ không biết"],c:0},
+    {t:"mcq",q:"Vì sao cần nói lời xin lỗi đúng lúc?",o:["Vì giúp hàn gắn mối quan hệ và thể hiện trách nhiệm","Vì xin lỗi là thua cuộc","Vì xin lỗi làm lỗi biến mất ngay","Vì xin lỗi để người khác sợ"],c:0},
+    {t:"mcq",q:"Tại sao việc giữ lời hứa quan trọng?",o:["Vì tạo niềm tin với người khác","Vì để người khác không nói gì được","Vì lời hứa luôn dễ thực hiện","Vì không giữ cũng chẳng sao"],c:0},
+    {t:"mcq",q:"Vì sao cần tiết kiệm tiền?",o:["Vì giúp có dự phòng cho nhu cầu cần thiết","Vì tiền tự sinh ra thêm","Vì không cần mua gì nữa","Vì tiết kiệm là để khỏi tiêu mãi mãi"],c:0},
+    {t:"mcq",q:"Khi thất bại nên làm gì?",o:["Rút kinh nghiệm và thử lại","Bỏ luôn mọi thứ","Trách móc bản thân mãi","Chờ may mắn tự tới"],c:0},
+    {t:"mcq",q:"Vì sao thói quen tốt giúp thành công?",o:["Vì tạo sự đều đặn và kỷ luật","Vì làm mọi việc dễ ngay lập tức","Vì không cần cố gắng nữa","Vì thói quen không bao giờ thay đổi"],c:0},
+    {t:"mcq",q:"Khi lười biếng nên tự thúc đẩy thế nào?",o:["Bắt đầu từ việc nhỏ và dễ trước","Chờ hứng tới thật lâu","Ngủ tiếp cho hết lười","Bỏ qua mọi nhiệm vụ"],c:0},
+  {t:"mcq",q:"Vì sao sáng tạo cần quan sát?",o:["Vì quan sát giúp phát hiện chi tiết và ý tưởng mới","Vì nhìn nhiều thì tự động giỏi","Vì quan sát làm ý tưởng biến mất","Vì sáng tạo không cần để ý gì"],c:0},
+    {t:"mcq",q:"Làm sao để có nhiều ý tưởng mới?",o:["Đặt câu hỏi, thử nghĩ nhiều hướng khác nhau","Chỉ giữ một ý tưởng duy nhất","Không đọc, không xem, không nghe gì","Chờ người khác nghĩ hộ"],c:0},
+    {t:"mcq",q:"Vì sao đặt câu hỏi giúp sáng tạo?",o:["Vì câu hỏi mở ra cách nhìn mới","Vì câu hỏi làm mọi thứ phức tạp vô ích","Vì câu hỏi chỉ để kiểm tra bài","Vì câu hỏi luôn có một đáp án cố định"],c:0},
+    {t:"mcq",q:"Khi bí ý tưởng nên làm gì?",o:["Nghỉ ngơi, quan sát và đổi góc nhìn","Bỏ cuộc ngay","Nói là không có sáng tạo nữa","Sao chép toàn bộ ý tưởng cũ"],c:0},
+    {t:"mcq",q:"Vì sao thử sai giúp sáng tạo?",o:["Vì từ sai lầm có thể tìm ra cách hay hơn","Vì sai thì khỏi sửa","Vì thử sai luôn đúng ngay từ đầu","Vì sáng tạo không liên quan đến thất bại"],c:0},
+    {t:"mcq",q:"Làm sao để kết hợp ý tưởng cũ thành mới?",o:["Lấy điểm hay của từng ý tưởng rồi ghép lại hợp lý","Trộn tất cả một cách ngẫu nhiên","Bỏ hết ý tưởng cũ đi","Chỉ dùng ý tưởng của người khác"],c:0},
+    {t:"mcq",q:"Vì sao ghi lại ý tưởng quan trọng?",o:["Vì tránh quên và dễ phát triển tiếp","Vì để giấy cho đầy","Vì ý tưởng tự lớn lên trên giấy","Vì ghi xong là không cần làm nữa"],c:0},
+    {t:"mcq",q:"Khi làm dự án sáng tạo cần bắt đầu từ đâu?",o:["Từ mục tiêu và ý tưởng chính","Từ việc mua thật nhiều đồ","Từ chờ có cảm hứng mãi","Từ sao chép người khác"],c:0},
+    {t:"mcq",q:"Vì sao góc nhìn khác tạo ra ý tưởng mới?",o:["Vì mỗi người có trải nghiệm và suy nghĩ riêng","Vì góc nhìn nào cũng như nhau","Vì thay đổi góc nhìn là vô ích","Vì ý tưởng chỉ đến từ may mắn"],c:0},
+    {t:"mcq",q:"Khi làm việc nhóm sáng tạo cần điều gì?",o:["Tôn trọng, chia sẻ và lắng nghe nhau","Ai cũng phải im lặng","Chỉ nghe một người duy nhất","Cạnh tranh đến mức không hợp tác"],c:0},
+    {t:"mcq",q:"Vì sao con người có cảm xúc?",o:["Vì não bộ phản ứng với trải nghiệm và môi trường","Vì tay chân tự tạo cảm xúc","Vì quần áo quyết định cảm xúc","Vì cảm xúc chỉ có ở trẻ nhỏ"],c:0},
+    {t:"mcq",q:"Điều gì ảnh hưởng đến tâm trạng?",o:["Giấc ngủ, môi trường, suy nghĩ và trải nghiệm","Chỉ màu áo đang mặc","Chỉ độ cao của ghế ngồi","Chỉ số điện thoại"],c:0},
+    {t:"mcq",q:"Vì sao áp lực gây căng thẳng?",o:["Vì cơ thể và não phải làm việc quá tải","Vì áp lực luôn là điều tốt nhất","Vì căng thẳng giúp ngủ ngon hơn","Vì áp lực không liên quan đến tâm lý"],c:0},
+    {t:"mcq",q:"Khi buồn nên làm gì?",o:["Chia sẻ với người tin cậy và chăm sóc bản thân","Giữ mãi trong lòng đến hết ngày","Tự trách mình liên tục","Không làm gì và tránh tất cả mọi người"],c:0},
+    {t:"mcq",q:"Vì sao con người dễ so sánh nhau?",o:["Vì thường muốn biết vị trí của mình so với người khác","Vì ai cũng giống hệt nhau","Vì so sánh làm người ta luôn vui","Vì xã hội không có giao tiếp"],c:0},
+    {t:"mcq",q:"Khi tự ti nên làm gì?",o:["Nhìn vào điểm mạnh của bản thân và cải thiện dần","So sánh thêm để buồn hơn","Giấu hết mọi thứ mãi mãi","Tin rằng mình không thể thay đổi"],c:0},
+    {t:"mcq",q:"Vì sao tự tin quan trọng?",o:["Vì giúp dám thử và dám thể hiện bản thân","Vì tự tin là không bao giờ sai","Vì tự tin làm ai cũng thích ngay","Vì tự tin thay thế năng lực"],c:0},
+    {t:"mcq",q:"Khi tức giận nên kiểm soát thế nào?",o:["Dừng lại, hít thở sâu và suy nghĩ trước khi nói","Nói ngay những gì tức nhất","Đập mọi thứ xung quanh","Trốn đi và không bao giờ quay lại"],c:0},
+    {t:"mcq",q:"Vì sao giao tiếp quan trọng?",o:["Vì giúp truyền đạt ý nghĩ và hiểu nhau hơn","Vì chỉ để nói cho vui","Vì ai cũng tự hiểu nhau sẵn","Vì giao tiếp không ảnh hưởng gì"],c:0},
+    {t:"mcq",q:"Khi bị hiểu lầm nên xử lý ra sao?",o:["Giải thích rõ ràng và bình tĩnh","Im lặng mãi cho xong","Cãi nhau lớn tiếng hơn","Cắt đứt mọi liên hệ ngay"],c:0},
+    {t:"mcq",q:"Vì sao thiên nhiên có vòng tuần hoàn nước?",o:["Vì nước liên tục bốc hơi, ngưng tụ và rơi xuống","Vì nước tự biến mất rồi xuất hiện lại","Vì mây làm nước từ đất bật lên","Vì biển nuốt hết nước"],c:0},
+    {t:"mcq",q:"Vì sao động vật có ngụy trang?",o:["Để tránh kẻ thù hoặc săn mồi tốt hơn","Để đổi màu cho đẹp","Để không cần ăn nữa","Để sống dưới nước"],c:0},
+    {t:"mcq",q:"Vì sao có loài sống dưới nước?",o:["Vì cơ thể chúng thích nghi với môi trường nước","Vì chúng không thích ánh sáng","Vì nước là nơi duy nhất có thức ăn","Vì mọi loài đều sống được dưới nước"],c:0},
+    {t:"mcq",q:"Vì sao có loài sống trên cạn?",o:["Vì chúng có đặc điểm phù hợp với môi trường đất liền","Vì cạn luôn lạnh hơn nước","Vì động vật không thể ở gần nước","Vì tất cả loài đều giống nhau"],c:0},
+    {t:"mcq",q:"Vì sao khí hậu thay đổi theo vùng?",o:["Vì vị trí địa lý, độ cao và ảnh hưởng biển khác nhau","Vì mọi nơi nhận cùng lượng nắng tuyệt đối","Vì gió không hề ảnh hưởng gì","Vì đất tự đổi khí hậu mỗi ngày"],c:0},
+    {t:"mcq",q:"Vì sao Trái Đất quay quanh Mặt Trời?",o:["Vì lực hấp dẫn giữ các hành tinh trong quỹ đạo","Vì Trái Đất tự chạy theo Mặt Trời","Vì Mặt Trời kéo từng cây cỏ","Vì không gian đẩy Trái Đất đi"],c:0},
+    {t:"mcq",q:"Vì sao có ngày và đêm?",o:["Vì Trái Đất tự quay quanh trục của nó","Vì Mặt Trời tắt rồi bật lại","Vì Mặt Trăng che kín cả thế giới","Vì mây di chuyển rất nhanh"],c:0},
+    {t:"mcq",q:"Vì sao mùa thay đổi?",o:["Vì trục Trái Đất nghiêng và Trái Đất chuyển động quanh Mặt Trời","Vì con người thay quần áo theo mùa","Vì mây đổi hướng","Vì cây cối tự xoay"],c:0},
+    {t:"mcq",q:"Vì sao núi lửa phun trào?",o:["Vì magma và khí nóng thoát lên từ lòng đất","Vì mưa quá nhiều","Vì sông bị tắc","Vì gió mạnh bên ngoài"],c:0},
+    {t:"mcq",q:"Vì sao động đất xảy ra?",o:["Vì các mảng kiến tạo dịch chuyển","Vì cây cối rung lên","Vì sóng biển đánh mạnh","Vì nhiệt độ ban đêm xuống thấp"],c:0},
+    {t:"mcq",q:"Vì sao cơ thể cần ăn uống?",o:["Vì để lấy năng lượng và chất dinh dưỡng","Vì để cảm thấy có việc làm","Vì ăn uống chỉ là thói quen","Vì cơ thể không cần gì khác"],c:0},
+    {t:"mcq",q:"Vì sao protein quan trọng?",o:["Vì giúp xây dựng và sửa chữa mô cơ thể","Vì làm nước ngọt hơn","Vì thay thế hoàn toàn nước","Vì chỉ cần cho người lớn"],c:0},
+    {t:"mcq",q:"Vì sao vitamin cần thiết?",o:["Vì giúp cơ thể hoạt động khỏe mạnh và cân bằng","Vì vitamin là đường","Vì vitamin chỉ để làm đẹp vỏ hộp","Vì không có cũng không sao"],c:0},
+    {t:"mcq",q:"Vì sao cần vận động?",o:["Vì giúp cơ thể khỏe hơn và tim phổi hoạt động tốt hơn","Vì để mệt nhanh hơn","Vì vận động làm cơ thể dừng lại","Vì chỉ để tăng cân"],c:0},
+    {t:"mcq",q:"Vì sao cơ thể mệt khi thiếu năng lượng?",o:["Vì các cơ quan không có đủ nhiên liệu để hoạt động","Vì cơ thể thích buồn ngủ","Vì mắt nhìn quá xa","Vì gió làm mất sức"],c:0},
+    {t:"mcq",q:"Vì sao con người cần học tập?",o:["Vì để hiểu thế giới và phát triển bản thân","Vì để có bài kiểm tra cho vui","Vì học tập chỉ dành cho trường học","Vì không học vẫn hiểu hết mọi thứ"],c:0},
+    {t:"mcq",q:"Vì sao não cần nghỉ ngơi?",o:["Vì giúp phục hồi và xử lý thông tin tốt hơn","Vì não không bao giờ mệt","Vì nghỉ ngơi làm quên hết mọi thứ","Vì chỉ cơ bắp mới cần nghỉ"],c:0},
+    {t:"mcq",q:"Vì sao con người có thói quen?",o:["Vì não thích lặp lại việc quen thuộc để tiết kiệm năng lượng","Vì thói quen tự sinh ra từ gió","Vì ai cũng có cùng thói quen","Vì thói quen không thể thay đổi"],c:0},
+    {t:"mcq",q:"Vì sao thay đổi thói quen khó?",o:["Vì não quen với cách làm cũ","Vì thói quen là thứ không liên quan đến hành vi","Vì đổi thói quen là không thể","Vì ai cũng thích khó khăn"],c:0},
+    {t:"mcq",q:"Vì sao môi trường ảnh hưởng con người?",o:["Vì môi trường tác động đến sức khỏe, tâm trạng và hành vi","Vì môi trường chỉ có cây và đất","Vì môi trường không ảnh hưởng đến ai","Vì con người không sống trong môi trường"],c:0},
+    {t:"mcq",q:"Vì sao ánh sáng ảnh hưởng sinh học?",o:["Vì nó tác động đến nhịp sinh học và hoạt động của cơ thể","Vì ánh sáng làm mọi vật đứng yên","Vì ánh sáng chỉ để nhìn cho đẹp","Vì không có ánh sáng thì cơ thể vẫn như cũ"],c:0},
+    {t:"mcq",q:"Vì sao âm thanh có thể ảnh hưởng cảm xúc?",o:["Vì não tiếp nhận và phản ứng với âm thanh khác nhau","Vì âm thanh chỉ là rung động vô nghĩa","Vì ai nghe cũng phản ứng giống nhau","Vì âm thanh không liên quan đến não"],c:0},
+    {t:"mcq",q:"Vì sao con người cần giao tiếp xã hội?",o:["Vì để học hỏi, hợp tác và được kết nối","Vì để tránh mọi người mãi mãi","Vì giao tiếp là chuyện không cần thiết","Vì xã hội không có tác dụng gì"],c:0},
+    {t:"mcq",q:"Vì sao cô đơn ảnh hưởng tâm lý?",o:["Vì con người thường cần sự kết nối và chia sẻ","Vì cô đơn làm cơ thể biến mất","Vì cô đơn luôn tốt hơn mọi thứ","Vì cô đơn chỉ xảy ra khi ở một mình vài phút"],c:0},
+    {t:"mcq",q:"Vì sao trải nghiệm mạnh dễ nhớ?",o:["Vì cảm xúc mạnh giúp não lưu giữ tốt hơn","Vì mọi trải nghiệm đều giống nhau","Vì trí nhớ không liên quan cảm xúc","Vì ký ức tự bay mất ngay"],c:0},
+    {t:"mcq",q:"Vì sao học từ sai lầm quan trọng?",o:["Vì sai lầm giúp hiểu cách làm tốt hơn lần sau","Vì sai lầm chứng tỏ phải dừng hẳn","Vì sai lầm không có ích gì","Vì sai lầm luôn đáng tự hào hơn đúng"],c:0},
+    {t:"mcq",q:"Vì sao cần kiên trì?",o:["Vì nhiều việc cần thời gian và nỗ lực để thành công","Vì kiên trì là cố chấp mọi lúc","Vì kiên trì làm hết khó khăn ngay lập tức","Vì kiên trì chỉ dành cho người lớn"],c:0},
+    {t:"mcq",q:"Vì sao mục tiêu giúp định hướng?",o:["Vì mục tiêu cho biết mình đang đi về đâu","Vì mục tiêu làm mất thời gian","Vì mục tiêu chỉ để viết ra cho đủ","Vì mục tiêu không liên quan hành động"],c:0},
+    {t:"mcq",q:"Vì sao con người cần động lực?",o:["Vì động lực thúc đẩy hành động và duy trì cố gắng","Vì động lực tự đến mãi mãi","Vì động lực thay thế mọi kỹ năng","Vì không có động lực vẫn làm được mọi thứ y như nhau"],c:0},
+    {t:"mcq",q:"Vì sao hiểu bản thân quan trọng?",o:["Vì giúp biết điểm mạnh, điểm yếu và hướng phát triển","Vì để biết tên mình","Vì để so sánh với người khác","Vì không cần hiểu bản thân vẫn tốt"],c:0},
+
+    {t:"text",q:"Ăn quả nhớ kẻ trồng ___",a:["cây"]},
+    {t:"text",q:"Uống nước nhớ ___",a:["nguồn"]},
+    {t:"text",q:"Có công mài sắt, có ngày nên ___",a:["kim"]},
+    {t:"text",q:"Đi một ngày đàng, học một sàng ___",a:["khôn"]},
+    {t:"text",q:"Lá lành đùm ___ rách",a:["lá"]},
+    {t:"text",q:"Tốt gỗ hơn tốt ___ sơn",a:["nước"]},
+    {t:"text",q:"Học ăn, học nói, học ___",a:["gói"]},
+    {t:"text",q:"Không thầy đố mày làm nên ___",a:["trò","chuyện","việc"]},
+    {t:"text",q:"Gần mực thì đen, gần đèn thì ___",a:["sáng"]},
+    {t:"text",q:"Một cây làm chẳng nên ___",a:["non"]},
+    {t:"text",q:"Ba cây chụm lại nên hòn ___ cao",a:["núi"]},
+    {t:"text",q:"Chớ thấy sóng cả mà ngã tay ___",a:["chèo"]},
+    {t:"text",q:"Ở hiền gặp ___",a:["lành"]},
+    {t:"text",q:"Ác giả ác ___",a:["báo"]},
+    {t:"text",q:"Trời không phụ lòng người có ___",a:["công","tâm"]},
+    {t:"text",q:"Có chí thì nên, có công mài sắt có ngày nên ___",a:["kim"]},
+    {t:"text",q:"Nước chảy đá ___",a:["mòn"]},
+    {t:"text",q:"Kiến tha lâu cũng đầy ___",a:["tổ"]},
+    {t:"text",q:"Đoàn kết là sức ___",a:["mạnh"]},
+    {t:"text",q:"Thương người như thể thương ___",a:["thân"]},
+    {t:"text",q:"Một giọt máu đào hơn ao nước ___",a:["lã"]},
+    {t:"text",q:"Bầu ơi thương lấy bí cùng, tuy rằng khác giống nhưng chung một ___",a:["giàn"]},
+    {t:"text",q:"Thương nhau như thể tay ___",a:["chân"]},
+    {t:"text",q:"Đi hỏi già, về nhà hỏi ___",a:["trẻ"]},
+    {t:"text",q:"Ăn trông nồi, ngồi trông ___",a:["hướng"]},
+    {t:"text",q:"Lời nói chẳng mất tiền mua, lựa lời mà nói cho ___ lòng nhau",a:["vừa"]},
+    {t:"text",q:"Lửa thử vàng, gian nan thử ___",a:["sức"]},
+    {t:"text",q:"Có chí làm quan, có gan làm ___",a:["giàu"]},
+    {t:"text",q:"Giàu đâu những kẻ ngủ trưa, sang đâu những kẻ say ___ tối ngày",a:["sưa"]},
+    {t:"text",q:"Trăm hay không bằng tay ___",a:["quen"]},
+    {t:"text",q:"Học thầy không tày học ___",a:["bạn"]},
+    {t:"text",q:"Đi với bụt mặc áo cà sa, đi với ma mặc áo ___",a:["giấy"]},
+    {t:"text",q:"Có làm thì mới có ___",a:["ăn"]},
+    {t:"text",q:"Một con ngựa đau cả tàu bỏ ___",a:["cỏ"]},
+    {t:"text",q:"Chim khôn kêu tiếng rảnh rang, người khôn nói tiếng dịu ___",a:["dàng"]},
+    {t:"text",q:"Ăn quả nhớ kẻ trồng cây, uống nước nhớ nguồn, con người nhớ ___",a:["tổ tiên","nguồn"]},
+    {t:"text",q:"Ở hiền thì lại gặp lành, ở ác gặp ___",a:["báo"]},
+    {t:"text",q:"Đói cho sạch, rách cho ___",a:["thơm"]},
+    {t:"text",q:"Thật thà là cha của ___",a:["quỷ quái","đứa dại"]},
+    {t:"text",q:"Sai một li đi một ___",a:["dặm"]},
+    {t:"text",q:"Có chí thì nên, không chí thì ___",a:["nản"]},
+    {t:"text",q:"Cây ngay không sợ chết ___",a:["đứng"]},
+    {t:"text",q:"Thuận vợ thuận chồng tát biển Đông cũng ___",a:["cạn"]},
+    {t:"text",q:"Một điều nhịn là chín điều ___",a:["lành"]},
+    {t:"text",q:"Khôn ngoan đối đáp người ngoài, gà cùng một mẹ ___",a:["chớ hoài đá nhau"]},
+    {t:"mcq", q:"Công cha như núi Thái Sơn, nghĩa mẹ như nước trong ___ chảy ra", o:["Suối", "Ngõ", "Sông", "Nguồn"], c:3},
+    {t:"mcq", q:"Chuồn chuồn bay thấp thì mưa, bay cao thì nắng, bay vừa thì ___", o:["Râm", "Mát", "Khô", "Lạnh"], c:0},
+    {t:"mcq", q:"Ếch ngồi đáy giếng coi trời bằng ___", o:["Cái vung", "Cái nia", "Ngọn cỏ", "Cái vung"], c:0}, // Sửa lại đáp án trùng
+    {t:"mcq", q:"Cày đồng đang buổi ban trưa, mồ hôi thánh thót như mưa ___", o:["Rơi", "Đổ", "Ruộng cày", "Dòng"], c:2},
+    {t:"mcq", q:"Trâu ơi ta bảo trâu này, trâu ra ngoài ruộng trâu ___ với ta", o:["Làm", "Cày", "Hát", "Chơi"], c:1},
+    {t:"mcq", q:"Muốn sang thì bắc cầu Kiều, muốn con hay chữ phải yêu lấy ___", o:["Cô", "Sách", "Bạn", "Thầy"], c:3},
+    {t:"mcq", q:"Bầu ơi thương lấy bí cùng, tuy rằng khác giống nhưng chung một ___", o:["Nhà", "Vườn", "Giàn", "Nồi"], c:2},
+    {t:"mcq", q:"Nhiễu điều phủ lấy giá gương, người trong một nước phải ___ nhau cùng", o:["Giúp", "Thương", "Yêu", "Cứu"], c:1},
+    {t:"mcq", q:"Cái nết đánh chết cái ___", o:["Thân", "Nết", "Đẹp", "Ngoại"], c:2},
+    {t:"mcq", q:"Có nuôi con mới biết lòng ___", o:["Trời đất", "Cha mẹ", "Vợ chồng", "Người ta"], c:1},
+    {t:"mcq", q:"Tay làm hàm nhai, tay quai miệng ___", o:["Đắng", "Nghỉ", "Chờ", "Trễ"], c:1},
+    {t:"mcq", q:"Đèn nhà ai nhà nấy ___", o:["Sáng", "Tắt", "Rạng", "Tỏ"], c:0},
+    {t:"mcq", q:"Môi hở răng ___", o:["Đau", "Lạnh", "Gãy", "Rụng"], c:1},
+    {t:"mcq", q:"Khôn ba năm dại một ___", o:["Tháng", "Tuần", "Ngày", "Giờ"], c:3},
+    {t:"mcq", q:"Sông có khúc, người có ___", o:["Lúc", "Thời", "Số", "Vận"], c:0},
+    {t:"mcq", q:"Dốt đến đâu học lâu cũng ___", o:["Biết", "Giỏi", "Thông", "Thành"], c:0},
+    {t:"mcq", q:"Kiến bò dĩa ___", o:["Mật", "Đường", "Xôi", "Bánh"], c:1},
+    {t:"mcq", q:"Mất bò mới lo làm ___", o:["Nhà", "Cổng", "Chuồng", "Rào"], c:2},
+    {t:"mcq", q:"Một miếng khi đói bằng một gói khi ___", o:["No", "Thừa", "Đầy", "Đủ"], c:0},
+    {t:"mcq", q:"Con nhà tông không giống lông cũng giống ___", o:["Da", "Dáng", "Cánh", "Hình"], c:2},
+    {t:"mcq", q:"Học đi đôi với ___", o:["Làm", "Hành", "Tập", "Nghĩ"], c:1},
+    {t:"mcq", q:"Tham thì ___", o:["Hại", "Thiệt", "Thâm", "Sợ"], c:2},
+    {t:"mcq", q:"Tránh vỏ dưa gặp vỏ ___", o:["Bầu", "Bí", "Dừa", "Mướp"], c:2},
+    {t:"mcq", q:"Nuôi lợn ăn cơm nằm, nuôi tằm ăn cơm ___", o:["Ngồi", "Đứng", "Chạy", "Quỳ"], c:1},
+    {t:"mcq", q:"Thẳng như ruột ___", o:["Gà", "Ngựa", "Trâu", "Mèo"], c:1},
+    {t:"mcq", q:"Sẩy chân gượng được, sẩy miệng không ___ được", o:["Nói", "Gỡ", "Dừng", "Cứu"], c:1},
+    {t:"mcq", q:"Lời nói gió ___", o:["Bay", "Thổi", "Cuốn", "Lùa"], c:0},
+    {t:"mcq", q:"Gieo gió gặt ___", o:["Bão", "Sét", "Mưa", "Lũ"], c:0},
+    {t:"mcq", q:"Lùi một bước tiến ___ bước", o:["Hai", "Ba", "Nhiều", "Mười"], c:0},
+    {t:"mcq", q:"Cháy nhà ra mặt ___", o:["Người", "Chủ", "Chuột", "Gián"], c:2},
+    {t:"mcq", q:"Thức lâu mới biết đêm ___", o:["Tối", "Dài", "Lạnh", "Buồn"], c:1},
+    {t:"mcq", q:"Cái khó ló cái ___", o:["Hay", "May", "Khôn", "Giỏi"], c:2},
+    {t:"mcq", q:"Được voi đòi ___", o:["Ngựa", "Hươu", "Tiên", "Cưỡi"], c:2},
+    {t:"mcq", q:"Thắng không kiêu, bại không ___", o:["Sợ", "Lùi", "Nản", "Buồn"], c:2},
+    {t:"mcq", q:"Chân cứng đá ___", o:["Mòn", "Mềm", "Vỡ", "Nứt"], c:1},
+    {t:"mcq", q:"Vắng chủ nhà gà mọc đuôi ___", o:["Dài", "Tôm", "Cáo", "Công"], c:1},
+    {t:"mcq", q:"Miệng nam mô bụng một bồ ___", o:["Dao găm", "Rắn rết", "Lòng dạ", "Tham lam"], c:0},
+    {t:"mcq", q:"Mưa dầm thấm ___", o:["Đất", "Áo", "Lâu", "Sâu"], c:2},
+    {t:"mcq", q:"Ăn không nói ___", o:["Láo", "Bậy", "Có", "Sai"], c:2},
+    {t:"mcq", q:"Ếch kiêu tại ___", o:["Miệng", "Thân", "Bụng", "Chân"], c:0},
+    {t:"mcq", q:"Nói thì dễ làm thì ___", o:["Khó", "Mệt", "Nản", "Lâu"], c:0},
+    {t:"mcq", q:"Nhập gia tùy ___", o:["Tục", "Phong", "Thói", "Lệ"], c:0},
+    {t:"mcq", q:"Cầu được ước ___", o:["Nên", "Thành", "Được", "Thấy"], c:3},
+    {t:"mcq", q:"Ở bầu thì tròn, ở ống thì ___", o:["Dài", "Thẳng", "Cong", "Ngắn"], c:0},
+    {t:"mcq", q:"Gần bùn mà chẳng hôi tanh mùi ___", o:["Sình", "Đất", "Bùn", "Cỏ"], c:2},
+    {t:"mcq", q:"Học hành vất vả kết quả ___", o:["To", "Lớn", "Ngọt", "Hay"], c:2},
+    {t:"mcq", q:"Đi một ngày đàng học một sàng khôn là của ai?", o:["Ông bà ta", "Người lạ", "Bạn bè", "Thầy cô"], c:0},
+    {t:"mcq", q:"Vỏ quýt dày có móng tay ___", o:["Dài", "Mạnh", "Sắc", "Nhọn"], c:3},
+    {t:"mcq", q:"Qua cầu rút ___", o:["Ván", "Thuyền", "Dây", "Sào"], c:0},
+    {t:"mcq", q:"Tiền nào của ___", o:["Nấy", "Đó", "Hết", "Thôi"], c:0},
+    {t:"mcq", q:"Càng cao danh vọng càng dày ___", o:["Tiền", "Lo", "Gian nan", "Tội"], c:1},
+    {t:"mcq", q:"Nói một đường làm một ___", o:["Hướng", "Nơi", "Lối", "Nẻo"], c:3}
+];
+
+const boCauHoiSoSanh = [
+    {t:"mcq",q:"My brother is __________ than me.",o:["tall", "taller", "tallest", "more tall"],c:1,e:"So sánh hơn với tính từ ngắn: tall → taller + than. Không dùng 'more tall' vì tính từ ngắn thêm -er."},
+    {t:"mcq",q:"This test is as __________ as the last one.",o:["difficult", "more difficult", "most difficult", "difficulty"],c:0,e:"So sánh bằng: as + tính từ nguyên mẫu + as. Giữa 'as...as' không dùng dạng so sánh hơn hay so sánh nhất."},
+    {t:"mcq",q:"Dogs are usually __________ than cats.",o:["friendly", "friendlier", "more friendly", "most friendly"],c:1,e:"Friendly là tính từ 2 âm tiết tận cùng -y, đổi y → i rồi thêm -er: friendlier (more friendly cũng gặp nhưng friendlier là dạng chuẩn trong các đáp án)."},
+    {t:"mcq",q:"Her new car is __________ expensive than her old one.",o:["as", "much", "more", "the"],c:2,e:"So sánh hơn với tính từ dài: more + expensive + than. 'as' dùng cho so sánh bằng, không đi với 'than'."},
+    {t:"mcq",q:"I don't run as __________ as my best friend.",o:["fast", "faster", "fastest", "more fast"],c:0,e:"So sánh bằng phủ định: not as + trạng từ nguyên mẫu + as → as fast as."},
+    {t:"mcq",q:"Yesterday was cold, but today is even __________.",o:["cold", "colder", "coldest", "more cold"],c:1,e:"'Even' nhấn mạnh so sánh hơn nên theo sau là dạng so sánh hơn: even colder."},
+    {t:"mcq",q:"Learning English is __________ than learning German for many students.",o:["easy", "easier", "more easy", "easiest"],c:1,e:"Easy → easier (tính từ ngắn tận cùng -y đổi y → i + er). 'more easy' sai."},
+    {t:"mcq",q:"Your house is the same size __________ mine.",o:["as", "like", "than", "to"],c:0,e:"Cấu trúc: the same + danh từ + as → the same size as mine."},
+    {t:"mcq",q:"The coffee here is __________ than the coffee at that small cafe.",o:["good", "better", "best", "more good"],c:1,e:"So sánh hơn bất quy tắc: good → better. 'more good' sai."},
+    {t:"mcq",q:"Nam is not __________ tall as his father.",o:["than", "so", "more", "like"],c:1,e:"Phủ định của so sánh bằng dùng 'not as...as' hoặc 'not so...as' → not so tall as."},
+    {t:"mcq",q:"This film is __________ interesting than the book.",o:["as", "more", "most", "less than"],c:1,e:"So sánh hơn với tính từ dài: more + interesting + than."},
+    {t:"mcq",q:"Planes can fly __________ than birds.",o:["higher", "high", "highest", "more high"],c:0,e:"High vừa là tính từ vừa là trạng từ, so sánh hơn là higher (không dùng 'more high')."},
+    {t:"mcq",q:"She speaks English as __________ as a native speaker.",o:["fluent", "fluently", "more fluently", "most fluently"],c:1,e:"Speaks là động từ nên cần trạng từ: fluently. Cấu trúc so sánh bằng: as + adv + as."},
+    {t:"mcq",q:"His health is getting __________ day by day.",o:["bad", "worse", "worst", "badly"],c:1,e:"So sánh tiến triển dùng so sánh hơn. Bad → worse (bất quy tắc). 'badly' là trạng từ, 'worst' là so sánh nhất."},
+    {t:"mcq",q:"Apple juice is not as __________ as orange juice.",o:["sweet", "sweeter", "sweetest", "more sweet"],c:0,e:"Phủ định so sánh bằng: not as + tính từ nguyên mẫu + as → not as sweet as."},
+    {t:"mcq",q:"The weather is getting __________ and __________.",o:["hot / hot", "hotter / hotter", "more hot / more hot", "hottest / hottest"],c:1,e:"So sánh tăng tiến với tính từ ngắn: hotter and hotter (gấp đôi phụ âm cuối: hot → hotter)."},
+    {t:"mcq",q:"The __________ you study, the __________ grades you will get.",o:["hard / good", "harder / better", "hardest / best", "more hard / more better"],c:1,e:"So sánh kép: The + so sánh hơn, the + so sánh hơn. The harder you study, the better grades you get (good → better)."},
+    {t:"mcq",q:"This hotel is __________ more comfortable than the one we stayed in last year.",o:["as", "so", "much", "very"],c:2,e:"'Much' nhấn mạnh so sánh hơn: much more comfortable. 'as', 'so', 'very' không dùng để nhấn mạnh trước so sánh hơn."},
+    {t:"mcq",q:"She drives __________ carefully than her husband.",o:["much", "far", "more", "many"],c:2,e:"Carefully là trạng từ dài nên dùng more carefully than. 'much/far' đứng trước 'more' chứ không thay thế nó."},
+    {t:"mcq",q:"The __________ he got, the __________ patient he became.",o:["older / less", "old / little", "oldest / least", "more old / less"],c:0,e:"So sánh kép: The older he got, the less patient he became. 'less' là so sánh hơn mức độ ít của 'patient'."},
+    {t:"mcq",q:"It is getting __________ to find a good job nowadays.",o:["more and more difficult", "difficult and difficult", "most difficult", "more difficult and difficult"],c:0,e:"So sánh tăng tiến với tính từ dài: more and more + tính từ (more and more difficult)."},
+    {t:"mcq",q:"He doesn't earn __________ money as his sister does.",o:["as many", "as much", "so many", "more much"],c:1,e:"Money là danh từ không đếm được nên dùng as much money as. 'many' chỉ dùng cho danh từ đếm được."},
+    {t:"mcq",q:"The earlier we leave, the __________ we will arrive.",o:["soon", "sooner", "soonest", "more soon"],c:1,e:"So sánh kép: The earlier we leave, the sooner we arrive. Sooner là so sánh hơn của soon."},
+    {t:"mcq",q:"This task is __________ easier than I expected.",o:["slightly", "as", "more", "so"],c:0,e:"'Slightly' (hơi, một chút) đứng trước so sánh hơn để chỉ mức chênh lệch nhỏ: slightly easier."},
+    {t:"mcq",q:"The more you practice, the __________ mistakes you will make.",o:["fewer", "less", "few", "little"],c:0,e:"Mistakes là danh từ đếm được số nhiều nên dùng fewer. 'less' dùng cho danh từ không đếm được."},
+    {t:"mcq",q:"She works twice as __________ hours as I do.",o:["many", "much", "long", "more"],c:0,e:"Hours là danh từ đếm được số nhiều nên: twice as many hours as."},
+    {t:"mcq",q:"The city is becoming __________ crowded every year.",o:["more and more", "much and much", "many and many", "most and most"],c:0,e:"So sánh tăng tiến với tính từ dài: more and more crowded."},
+    {t:"mcq",q:"The __________ you spend, the __________ you can save.",o:["more / less", "much / little", "most / least", "many / fewer"],c:0,e:"So sánh kép: The more you spend, the less you can save (càng chi nhiều thì càng tiết kiệm được ít)."},
+    {t:"mcq",q:"My new laptop is far __________ efficient than the old one.",o:["more", "as", "most", "very"],c:0,e:"'Far' nhấn mạnh so sánh hơn: far more efficient than (efficient là tính từ dài)."},
+    {t:"mcq",q:"He speaks English __________ more fluently than he did last year.",o:["considerably", "as", "so", "more"],c:0,e:"'Considerably' (đáng kể) đứng trước so sánh hơn: considerably more fluently."},
+    {t:"mcq",q:"The higher up you go, the __________ the air becomes.",o:["cold", "colder", "coldest", "more cold"],c:1,e:"So sánh kép: The higher..., the colder the air becomes. Cold → colder (tính từ ngắn)."},
+    {t:"mcq",q:"No one in the class is as intelligent __________ Linh.",o:["than", "as", "like", "with"],c:1,e:"So sánh bằng: as + tính từ + as → as intelligent as Linh. 'than' chỉ dùng cho so sánh hơn."},
+    {t:"mcq",q:"The joke was __________ funnier than I thought it would be.",o:["a lot", "more", "as", "so"],c:0,e:"'A lot' nhấn mạnh so sánh hơn: a lot funnier. Funnier đã là so sánh hơn nên không thêm 'more'."},
+    {t:"mcq",q:"The __________ information you have, the __________ decisions you can make.",o:["better / wiser", "good / wise", "best / wisest", "more good / more wise"],c:0,e:"So sánh kép: The better information you have, the wiser decisions you can make (good → better, wise → wiser)."},
+    {t:"mcq",q:"The population of Tokyo is much larger than __________ of Hanoi.",o:["this", "that", "these", "those"],c:1,e:"'That of Hanoi' thay cho 'the population of Hanoi' để tránh lặp từ; population là danh từ số ít không đếm được nên dùng 'that', không dùng 'those'."},
+    {t:"mcq",q:"The more carefully you prepare for the interview, __________ confidence you will project.",o:["the more", "the most", "more", "much"],c:0,e:"So sánh kép: The more carefully..., the more confidence... — vế sau cũng dùng 'the more' đi với danh từ confidence."},
+    {t:"mcq",q:"Rewriting: \"If you read more books, you will gain more knowledge.\" -> The more books you read, __________ knowledge you will gain.",o:["the more", "the most", "more", "much more"],c:0,e:"So sánh kép với danh từ: The more books you read, the more knowledge you will gain."},
+    {t:"mcq",q:"Which sentence is grammatically CORRECT?",o:["The more I know him, the less I like him.", "The more I know him, the lesser I like him.", "The most I know him, the less I like him.", "The more I know him, I like him less."],c:0,e:"Câu A đúng: The more I know him, the less I like him. 'lesser' không dùng ở đây, 'the most' sai, và câu D thiếu cấu trúc 'the + so sánh hơn' ở vế sau."},
+    {t:"mcq",q:"The doctor advised him to walk a bit __________ every morning to improve his cardio health.",o:["farther", "further", "farthest", "furthermore"],c:0,e:"Farther dùng cho khoảng cách vật lý (đi bộ xa hơn một chút). 'Further' thiên về nghĩa trừu tượng, thêm nữa."},
+    {t:"mcq",q:"Rewriting: \"Her English fluency improved as she practiced speaking every day.\" -> The more she practiced speaking English every day, __________ her fluency became.",o:["the better", "the good", "the best", "better"],c:0,e:"So sánh kép: The more she practiced..., the better her fluency became (good → better)."},
+    {t:"mcq",q:"He has __________ experience in project management than his senior colleague.",o:["considerably less", "considerably fewer", "far few", "much fewer"],c:0,e:"Experience (kinh nghiệm) là danh từ không đếm được nên dùng less. 'Considerably' nhấn mạnh mức chênh lệch."},
+    {t:"mcq",q:"The faster we walk, __________ we will reach our destination.",o:["the sooner", "sooner", "the soonest", "the more soon"],c:0,e:"So sánh kép: The faster we walk, the sooner we will reach (soon → sooner)."},
+    {t:"mcq",q:"Choose the underlined part that needs correction: \"The more (A) advanced the technology becomes (B), the most (C) dependent on it we grow (D).\"",o:["A", "B", "C", "D"],c:2,e:"Lỗi ở C: phải là 'the more dependent', không phải 'the most'. So sánh kép cần 'the more...the more...'."},
+    {t:"mcq",q:"The cost of living in Singapore is nearly twice __________ high as in Vietnam.",o:["as", "than", "so", "more"],c:0,e:"Bội số + as + tính từ + as: twice as high as."},
+    {t:"mcq",q:"The more stress you experience at work, __________ sleep quality you will have at night.",o:["the worse", "the worst", "the bad", "worse"],c:0,e:"So sánh kép: The more stress..., the worse sleep quality... (bad → worse). 'The worst' là so sánh nhất, không phù hợp."},
+    {t:"mcq",q:"Rewriting: \"As demand increases, prices go up higher.\" -> The higher the demand, __________.",o:["the higher the prices go", "the prices go higher", "higher the prices go", "the highest the prices go"],c:0,e:"So sánh kép: The higher the demand, the higher the prices go. Vế sau phải có 'the' + so sánh hơn."},
+    {t:"mcq",q:"Living in a quiet rural area is far __________ stressful than living in a bustling metropolis.",o:["less", "lesser", "least", "few"],c:0,e:"'Far' nhấn mạnh + less + tính từ dài + than: far less stressful than. 'Lesser' không dùng trong cấu trúc này."},
+    {t:"mcq",q:"Choose the sentence that best combines the two statements: \"You exercise regularly. You feel healthy.\"",o:["The more regularly you exercise, the healthier you feel.", "The most regularly you exercise, the healthier you feel.", "The more you exercise regularly, the more healthy you feel.", "The regular you exercise, the healthiest you feel."],c:0,e:"Câu A đúng: The more regularly you exercise, the healthier you feel. Câu B dùng 'most' sai, câu C đặt trạng từ sai chỗ, câu D dùng tính từ sai."},
+    {t:"mcq",q:"My elder brother earns __________ money than I do, but he works __________ hours.",o:["more / fewer", "more / less", "much / fewer", "many / less"],c:0,e:"Money không đếm được nên dùng more; hours đếm được nên dùng fewer: more money, fewer hours."},
+    {t:"mcq",q:"The more detailed the instructions are, __________ confusion the students will experience.",o:["the less", "the fewer", "the least", "less"],c:0,e:"Confusion là danh từ không đếm được nên dùng 'the less confusion'. 'Fewer' chỉ dùng với danh từ đếm được."}
+];
+
+
+let danhSachHienTai = [];
+let viTriHienTai = 0;
+let soCauDung = 0;
+let soCauSai = 0;
+let soCauBoQua = 0;
+let cheDoCoDinh = false;
+let thoiGianBatDau = 0;
+let dangPhatNhac = false;
+let dongHoDemNguoc;
+let henGioCanhBao1;
+let henGioCanhBao2;
+let thoiGianChuyenCau;
+const THOI_GIAN_MOI_CAU = 20;
+let henGioCanChinh;
+
+function batTatNhac() {
+    const nhac = document.getElementById('nhac-nen');
+    const nut = document.getElementById('nut-am-nhac');
+    if (dangPhatNhac) {
+        nhac.pause();
+        nut.innerText = "🎵 Bật nhạc";
+    } else {
+        nhac.play().catch(() => alert("Vui lòng chạm vào màn hình!"));
+        nut.innerText = "🔇 Dừng nhạc";
+    }
+    dangPhatNhac = !dangPhatNhac;
+}
+
+function xaoTronDapAn(cauHoi) {
+    if (cauHoi.t === "mcq") {
+        let dapAnDung = cauHoi.o[cauHoi.c];
+        let mangDapAn = [...cauHoi.o];
+        for (let i = mangDapAn.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [mangDapAn[i], mangDapAn[j]] = [mangDapAn[j], mangDapAn[i]];
+        }
+        cauHoi.c = mangDapAn.indexOf(dapAnDung);
+        cauHoi.o = mangDapAn;
+    }
+    return cauHoi;
+}
+
+function batDauTroChoi(nguon, coDinh) {
+    viTriHienTai = 0;
+    soCauDung = 0;
+    soCauSai = 0;
+    soCauBoQua = 0;
+    cheDoCoDinh = !!coDinh;
+
+    const ban = nguon.map(c => ({ ...c, o: c.o ? [...c.o] : c.o }));
+    danhSachHienTai = coDinh ? ban : ban.sort(() => Math.random() - 0.5).map(xaoTronDapAn);
+    thoiGianBatDau = Date.now();
+
+    document.getElementById('bang-dang-nhap').classList.remove('hien-thi');
+    document.getElementById('bang-nhap-ma').classList.remove('hien-thi');
+    document.getElementById('bang-cau-hoi').classList.add('hien-thi');
+    taiCauHoiHienTai();
+}
+
+function tiepTucDoVui() {
+    batDauTroChoi(tapHopCauHoi, false);
+}
+
+function moOMaCode() {
+    document.getElementById('bang-dang-nhap').classList.remove('hien-thi');
+    document.getElementById('bang-nhap-ma').classList.add('hien-thi');
+    const o = document.getElementById('o-nhap-ma');
+    o.value = '';
+    o.focus();
+}
+
+function quayLaiMenu() {
+    document.getElementById('bang-nhap-ma').classList.remove('hien-thi');
+    document.getElementById('bang-dang-nhap').classList.add('hien-thi');
+}
+
+function xacNhanMa() {
+    const ma = document.getElementById('o-nhap-ma').value.trim();
+    if (ma === "037217") {
+        batDauTroChoi(boCauHoiSoSanh, true);
+    } else {
+        alert("Mã không đúng!");
+    }
+}
+
+function taiCauHoiHienTai() {
+    dungDongHo();
+    if (viTriHienTai >= danhSachHienTai.length) return ketThucTroChoi();
+
+    const cauHoi = danhSachHienTai[viTriHienTai];
+    document.getElementById('van-ban-tien-do').innerText = `CÂU ${viTriHienTai + 1} / ${danhSachHienTai.length}`;
+    const tieuDe = document.getElementById('tieu-de-cau-hoi');
+    tieuDe.classList.remove('hieu-ung-vao');
+    void tieuDe.offsetWidth;
+    tieuDe.innerText = cauHoi.q;
+    tieuDe.classList.add('hieu-ung-vao');
+
+    const vanBanTrangThai = document.getElementById('van-ban-trang-thai');
+    vanBanTrangThai.innerText = "";
+    document.getElementById('khung-giai-thich').innerHTML = "";
+
+    const khuVuc = document.getElementById('khu-vuc-dap-an');
+    khuVuc.innerHTML = "";
+
+    if (cauHoi.t === "mcq") {
+        cauHoi.o.forEach((luaChon, viTri) => {
+            const nutBam = document.createElement('button');
+            nutBam.className = 'nut-chon';
+            nutBam.innerText = luaChon;
+            nutBam.style.animationDelay = (viTri * 0.07) + 's';
+            nutBam.onclick = () => kiemTraTracNghiem(viTri, cauHoi.c);
+            khuVuc.appendChild(nutBam);
+        });
+    } else {
+        const hopVanBan = document.createElement('input');
+        hopVanBan.type = "text";
+        hopVanBan.placeholder = "Enter Answer...";
+        hopVanBan.className = 'hieu-ung-vao';
+
+        const nutNop = document.createElement('button');
+        nutNop.className = 'nut-hanh-dong hieu-ung-vao';
+        nutNop.style.animationDelay = '0.08s';
+        nutNop.innerText = "Nộp Câu Trả Lời";
+        nutNop.onclick = () => kiemTraTuLuan(hopVanBan.value, cauHoi.a);
+
+        khuVuc.appendChild(hopVanBan);
+        khuVuc.appendChild(nutNop);
+        hopVanBan.focus();
+    }
+
+    document.getElementById('nut-bo-qua').disabled = false;
+    kichHoatDongHo();
+}
+function dungDongHo() {
+    clearTimeout(dongHoDemNguoc);
+    clearTimeout(henGioCanhBao1);
+    clearTimeout(henGioCanhBao2);
+    const thanhThoiGian = document.getElementById('thanh-thoi-gian');
+    if (thanhThoiGian) {
+        const transformHienTai = getComputedStyle(thanhThoiGian).transform;
+        thanhThoiGian.style.transition = 'none';
+        thanhThoiGian.style.transform = transformHienTai;
+    }
+}
+
+function kichHoatDongHo() {
+    const thanhThoiGian = document.getElementById('thanh-thoi-gian');
+    dungDongHo();
+    thanhThoiGian.classList.remove('canh-bao', 'nguy-hiem');
+    thanhThoiGian.style.transition = 'none';
+    thanhThoiGian.style.transform = 'scaleX(1)';
+    void thanhThoiGian.offsetWidth;
+    thanhThoiGian.style.transition = `transform ${THOI_GIAN_MOI_CAU}s linear, background-color 0.4s ease`;
+    thanhThoiGian.style.transform = 'scaleX(0)';
+
+    henGioCanhBao1 = setTimeout(() => thanhThoiGian.classList.add('canh-bao'), THOI_GIAN_MOI_CAU * 500);
+    henGioCanhBao2 = setTimeout(() => thanhThoiGian.classList.add('nguy-hiem'), THOI_GIAN_MOI_CAU * 750);
+    dongHoDemNguoc = setTimeout(() => boQuaCauHoi(true), THOI_GIAN_MOI_CAU * 1000);
+}
+
+function boQuaCauHoi(hetGio = false) {
+    dungDongHo();
+    khoaTatCaNut();
+    soCauBoQua++;
+    const vanBanTrangThai = document.getElementById('van-ban-trang-thai');
+    if (hetGio) {
+        vanBanTrangThai.innerText = "Hết Giờ!";
+        vanBanTrangThai.style.color = "var(--mau-sai)";
+    } else {
+        vanBanTrangThai.innerText = "Đã Bỏ Qua!";
+        vanBanTrangThai.style.color = "var(--mau-canh-bao)";
+    }
+    if (!hienGiaiThich(-1)) thoiGianChuyenCau = setTimeout(chuyenCauTiepTheo, 1500);
+}
+
+function kiemTraTracNghiem(viTriChon, viTriDung) {
+    dungDongHo();
+    khoaTatCaNut();
+    const danhSachNut = document.querySelectorAll('.nut-chon');
+    const vanBanTrangThai = document.getElementById('van-ban-trang-thai');
+
+    if (viTriChon === viTriDung) {
+        danhSachNut[viTriChon].classList.add('chon-dung');
+        soCauDung++;
+        vanBanTrangThai.innerText = "Chính Xác! ";
+        vanBanTrangThai.style.color = "var(--mau-dung)";
+    } else {
+        danhSachNut[viTriChon].classList.add('chon-sai');
+        danhSachNut[viTriDung].classList.add('chon-dung');
+        soCauSai++;
+        vanBanTrangThai.innerText = "Sai!";
+        vanBanTrangThai.style.color = "var(--mau-sai)";
+    }
+    if (!hienGiaiThich(viTriChon)) thoiGianChuyenCau = setTimeout(chuyenCauTiepTheo, 2000);
+}
+
+function kiemTraTuLuan(giaTriNhap, danhSachDapAn) {
+    dungDongHo();
+    khoaTatCaNut();
+    const tuKhoa = giaTriNhap.trim().toLowerCase();
+    const vanBanTrangThai = document.getElementById('van-ban-trang-thai');
+
+    if (danhSachDapAn.some(dapAn => tuKhoa.includes(dapAn.toLowerCase()))) {
+        soCauDung++;
+        vanBanTrangThai.innerText = "Chính xác!";
+        vanBanTrangThai.style.color = "var(--mau-dung)";
+    } else {
+        soCauSai++;
+        vanBanTrangThai.innerText = `Sai, đáp án là: ${danhSachDapAn[0]}`;
+        vanBanTrangThai.style.color = "var(--mau-sai)";
+    }
+    thoiGianChuyenCau = setTimeout(chuyenCauTiepTheo, 2000);
+}
+
+function hienGiaiThich(viTriChon) {
+    const cauHoi = danhSachHienTai[viTriHienTai];
+    if (!cauHoi || !cauHoi.e) return false;
+    const khung = document.getElementById('khung-giai-thich');
+    const dapAnDung = cauHoi.o[cauHoi.c];
+    let dongChon;
+    if (viTriChon < 0) {
+        dongChon = '<p class="gt-chon gt-bo">Bạn chưa chọn đáp án nào.</p>';
+    } else if (viTriChon === cauHoi.c) {
+        dongChon = `<p class="gt-chon gt-dung">✅ Bạn chọn <b>${cauHoi.o[viTriChon]}</b> — chính xác!</p>`;
+    } else {
+        dongChon = `<p class="gt-chon gt-sai">❌ Bạn chọn <b>${cauHoi.o[viTriChon]}</b> — chưa đúng.</p>`;
+    }
+    khung.innerHTML = `${dongChon}<p>Đáp án đúng: <b>${dapAnDung}</b></p><p>💡 ${cauHoi.e}</p>`;
+    const nutTiep = document.createElement('button');
+    nutTiep.className = 'nut-hanh-dong';
+    nutTiep.innerText = viTriHienTai + 1 >= danhSachHienTai.length ? 'Xem kết quả' : 'Câu tiếp theo →';
+    nutTiep.addEventListener('click', () => {
+        clearTimeout(thoiGianChuyenCau);
+        chuyenCauTiepTheo();
+    });
+    khung.appendChild(nutTiep);
+    khung.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return true;
+}
+
+function khoaTatCaNut() {
+    document.querySelectorAll('.nut-chon, .nut-hanh-dong').forEach(nut => nut.disabled = true);
+}
+
+function chuyenCauTiepTheo() {
+    viTriHienTai++;
+    taiCauHoiHienTai();
+}
+
+function ketThucTroChoi() {
+    const diemSoCuoiCung = Math.round((soCauDung / danhSachHienTai.length) * 100);
+    const thoiGianHoanThanh = Math.floor((Date.now() - thoiGianBatDau) / 1000);
+
+    document.getElementById('bang-cau-hoi').classList.remove('hien-thi');
+    document.getElementById('bang-ket-qua').classList.add('hien-thi');
+
+    hienThiKetQua(diemSoCuoiCung, soCauDung, soCauSai, soCauBoQua, thoiGianHoanThanh);
+    chayHieuUngPhaoHoa();
+}
+
+function hienThiKetQua(diem, dung, sai, boQua, thoiGian) {
+    demSoDiem(document.getElementById('diem-so-cuoi-cung'), diem);
+    document.getElementById('chi-tiet-thong-ke').innerHTML = `
+        Đúng: <b>${dung}</b> câu <br>
+        Sai: <b>${sai}</b> câu <br>
+        Bỏ qua: <b>${boQua}</b> câu <br>
+        Thoi gian: <b>${thoiGian}</b> giây
+    `;
+}
+function demSoDiem(phanTu, giaTriDich, thoiLuong = 1200) {
+    const batDau = performance.now();
+    function buoc(hienTai) {
+        const tienDo = Math.min((hienTai - batDau) / thoiLuong, 1);
+        const eased = 1 - Math.pow(1 - tienDo, 3);
+        phanTu.innerText = Math.round(eased * giaTriDich) + "D";
+        if (tienDo < 1) requestAnimationFrame(buoc);
+    }
+    requestAnimationFrame(buoc);
+}
+
+function choiLaiTuDau() {
+    viTriHienTai = 0;
+    soCauDung = 0;
+    soCauSai = 0;
+    soCauBoQua = 0;
+    danhSachHienTai = [];
+    document.getElementById('bang-ket-qua').classList.remove('hien-thi');
+    document.getElementById('bang-dang-nhap').classList.add('hien-thi');
+}
+function chayHieuUngPhaoHoa() {
+    const canvas = document.getElementById('phao-hoa');
+    if (!canvas) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const ctx = canvas.getContext('2d');
+    const chieuRong = canvas.width;
+    const chieuCao = canvas.height;
+    const mauSac = ['#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#ec4899', '#fbbf24'];
+    const soManh = 150;
+    const cacManh = Array.from({ length: soManh }, () => ({
+        x: Math.random() * chieuRong,
+        y: -20 - Math.random() * chieuCao * 0.6,
+        w: 6 + Math.random() * 6,
+        h: 8 + Math.random() * 8,
+        mau: mauSac[Math.floor(Math.random() * mauSac.length)],
+        vy: 2.5 + Math.random() * 3,
+        vx: -2 + Math.random() * 4,
+        goc: Math.random() * 360,
+        vGoc: -8 + Math.random() * 16
+    }));
+
+    let batDauLuc = null;
+    const THOI_LUONG_MS = 3200;
+
+    function ve(hienTai) {
+        if (batDauLuc === null) batDauLuc = hienTai;
+        const troiQua = hienTai - batDauLuc;
+        ctx.clearRect(0, 0, chieuRong, chieuCao);
+        cacManh.forEach(m => {
+            m.x += m.vx;
+            m.y += m.vy;
+            m.vy += 0.02;
+            m.goc += m.vGoc;
+            ctx.save();
+            ctx.translate(m.x, m.y);
+            ctx.rotate(m.goc * Math.PI / 180);
+            ctx.fillStyle = m.mau;
+            ctx.fillRect(-m.w / 2, -m.h / 2, m.w, m.h);
+            ctx.restore();
+        });
+        if (troiQua < THOI_LUONG_MS) {
+            requestAnimationFrame(ve);
+        } else {
+            ctx.clearRect(0, 0, chieuRong, chieuCao);
+        }
+    }
+    requestAnimationFrame(ve);
+}
+function canChinhKichThuoc() {
+    const canvas = document.getElementById('phao-hoa');
+    if (canvas) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+}
+function xuLyThayDoiKichThuoc() {
+    clearTimeout(henGioCanChinh);
+    henGioCanChinh = setTimeout(canChinhKichThuoc, 150);
+}
+window.addEventListener('resize', xuLyThayDoiKichThuoc);
+window.addEventListener('orientationchange', canChinhKichThuoc);
+canChinhKichThuoc();
+
+function ganSuKien() {
+    const gan = (id, ham) => {
+        const nut = document.getElementById(id);
+        if (nut) nut.addEventListener('click', ham);
+    };
+    gan('nut-tiep-tuc', tiepTucDoVui);
+    gan('nut-nhap-ma', moOMaCode);
+    gan('nut-xac-nhan', xacNhanMa);
+    gan('nut-quay-lai', quayLaiMenu);
+    const o = document.getElementById('o-nhap-ma');
+    if (o) o.addEventListener('keydown', e => { if (e.key === 'Enter') xacNhanMa(); });
+}
+ganSuKien();
+
+</script>
+</body>
+</html>
